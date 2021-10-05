@@ -19,3 +19,14 @@ como uma plataforma open-source para ensinar conceitos e técnicas de automaçã
 estudantes de engenharia.
 
 Palavras-chave: gêmeo digital, automação industrial, simulação de processo
+
+Arquivos:
+.INI      Arquivo de configuração do PLANTsim. 
+          [necessário]
+.PLANT    Arquivo de modelagem do sistema simulado pelo PLANTsim. 
+          [necessário]
+.PRG      Arquivo contendo um programa em linguagem GRAFCET (texto) que executa ações de controle do
+          sistema modelado em .PLANT. 
+          [opcional]
+.SIM      Arquivo contendo uma sequência de eventos que definem os estados do sistema modelado em .PLANT. 
+          [opcional]
