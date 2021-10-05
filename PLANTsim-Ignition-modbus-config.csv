@@ -1,0 +1,5 @@
+10
+bitS,0,1,false,0,HoldingRegisterUInt16,0
+bitA,0,1,false,0,HoldingRegister,2
+wordS,0,9,false,0,HoldingRegister,4
+wordA,0,9,false,0,HoldingRegister,14

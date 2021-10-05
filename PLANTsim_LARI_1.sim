@@ -1,0 +1,58 @@
+# SIMULATION example
+# if <expression> <id>=<value>
+# at <time.stamp> <id>=<value>
+
+#if tk2.level.pv < tk2.level.sp tk2.fc.active=true
+#if tk2.temp.pv < tk2.temp.sp tk2.tc1.active=true
+#if tk2.temp.pv < tk2.temp.sp tk2.tc2.active=true
+#if tk3.lsl = false tk3.fv.active=true
+#if bkt.unity.enabled = true bkt.fv.active=true 
+#if tk3.lsl = false tk3.fv.active=true
+
+#at 1 tk2.fc.active=true
+#at 5 tk3.level.sp=4000
+#at 22 tk2.fc.active=false
+#at 24 tk3.fv.active=true
+#if tk3.lsh.active=True tk3.fv.active=false
+#at 24 link_2_3.fc.active=true
+#at 24 tk3.level.sp=2000
+#at 42 link_2_3.fc.active=false
+
+#at 5 tk3.level.sp=2000
+
+# SIS
+if not(sis.lah2) sis.fv02.active=true
+if not(sis.lah3) sis.fv23.active=true
+if not(sis.lah3) sis.fv63.active=true
+if (sis.lah2) sis.fv02.active=false
+if (sis.lah3) sis.fv23.active=false
+if (sis.lah3) sis.fv63.active=false
+
+# PROCESS
+if not(tk0.lsl) tk0.fv0.active=true
+if tk0.lsh      tk0.fv0.active=false
+if tk2.lsh      tk2.fc02.active=false
+if not(tk3.lsl) pip23.fv23.active=true
+if tk3.lsh      pip23.fv23.active=false
+if not(tk4.lsl) tk4.fc34.active=true
+if tk4.lsh      tk4.fc34.active=false
+
+if dct.unity.enabled alt.fv60.active=true
+if dct.unity.enabled alt.fc60.active=true
+if not(dct.unity.enabled)or(dct.lsh.active) alt.fv60.active=false
+if not(dct.unity.enabled)or(dct.lsh.active) alt.fc60.active=false
+
+#at 10 filler.fc60.mv=10
+#at 15 filler.fc60.mv=5
+#at 20 filler.fc60.mv=0
+#at 40 filler.fc60.active=false
+
+at 1 dct.unity.enabled=true
+at 25 dct.unity.enabled=false
+at 30 dct.unity.enabled=true
+at 45 dct.unity.enabled=false
+
+at 1 flc.fc4_2.mv=40
+at 35 flc.fc4_2.mv=100
+
+at 300 *.shutdown.active=true

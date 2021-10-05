@@ -1,0 +1,207 @@
+# PLANTA DO LARI - Processo 1 - TRATAMENTO DE EFLUENTES
+# author: glbramalho at gmail.com - Geraldo Ramalho
+#
+# Description:
+#
+# Format:
+#
+# unity unity_id enabled <true/false>
+#   procvar
+#      pv_id <space> type <type> param_j <space> value_j [if <tag_id>]
+#   actuator
+#      tag_id <space> type <type> active <false/true> param_j <space> value_j
+#   sensor
+#      tag_id <space> type <type> active <false/true> param_j <space> value_j
+#
+# ** each proccess variable is mapped as an analog sensor
+#
+# Property types: level_var (sys generic()), process_meter (sys flow_meter())
+#          minimum properties: unity (enabled <Ttrue/False>), lvl (mix <pv_id>), tmp
+# Actuator types: controller (ctrl PID(),ctrl_pv <pv_id>), relay, transmitter, mixer (to_pv <pv_id>), memory
+# Sensor types: switch (from_pv <pv_id>)
+#
+# <pv_id> = unity_name.pv_name
+# from_pv <pv_id>
+# to_pv <pv_id>
+# active/pv <value> can contain an expression using ids and python functions; some PLANTsim functions are allowed: rnd()
+
+# operation  ----------------------------------------------------------------
+unity * enabled false label operation # MUST HAVE
+    actuator
+      shutdown type memory active false bit 31 label shutdown_plantsim
+      reset type memory active false bit 30 label reload_plant_ini
+
+# security instrumented system ----------------------------------------------
+unity sis enabled true label security_instrumented_system
+    procvar
+        x02 type aux_var pv 0 if fv02
+        x23 type aux_var pv 0 if fv23
+        x63 type aux_var pv 0 if fv63
+    actuator
+        fv02 type relay active true bit 16 flow 0.1 from_pv x02 to_pv tk2.lvl inlet true label onoff_valve
+        fv23 type relay active true bit 18 flow 0.1 from_pv x23 to_pv tk3.lvl inlet true label onoff_valve
+        fv63 type relay active true bit 19 flow 0.1 from_pv x63 to_pv tk3.lvl inlet true label onoff_valve
+    sensor
+        lah2 type switch active tk2.lvl>70 bit 16 label level_high_alarm
+        lah3 type switch active tk3.lvl>70 bit 17 label level_high_alarm
+
+# alternative_path ----------------------------------------------------------
+unity alt enabled true label alternative_path
+    procvar
+        x60 type aux_var pv 0 if fv60
+        x63 type aux_var pv 0 if fv63
+    actuator
+        fv60 type relay active true bit 13 flow 0.1 from_pv x60 to_pv tk0.lvl inlet false label discharge
+        fv63 type relay active true bit 12 flow 0.1 from_pv x63 to_pv sis.x63 inlet true label to_tank_3
+        fc60 type controller active false bit 11 flow 0.3 ctrl PID() wordw_mv 3 ctrl_pv ftr.lvl from_pv ftr.lvl to_pv x60 inlet true label ctrl_valve
+
+
+# source  -------------------------------------------------------------------
+unity src enabled true sequence 0 label wastewater
+    procvar
+        lvl type level_var pv 999 wordr_pv 15 limits 0,999 sys generic() noise 0.0 loss 0.0
+        tmp type temperature_var pv int(rnd()*10)+50 limits 0,100 sys generic() noise 0.0 loss 0.0
+        ph type ph_var pv int(rnd()*10)+3 limits 0,14 sys generic() noise 0.001 loss 0.0
+        o2 type oxigen_var pv int(rnd()*10)+5 limits 0,100 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv int(rnd()*10)+90 limits 0,100 sys generic() noise 0.001 loss 0.1
+
+# tank 0 ---------------------------------------------------------------------
+unity tk0 enabled true sequence 1 label tank_0
+    procvar
+        lvl type level_var pv 0 wordr_pv 0 limits 0,100 sys generic() noise 0.002 loss 0
+        tmp type temperature_var pv 0 wordr_pv 1 limits 0,100 sys generic() noise 0.001 loss 0.02
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    actuator
+        fv0 type relay active false bit 0 flow 0.2 from_pv src.lvl to_pv lvl inlet true label onoff_valve
+    sensor
+        lshh type switch active lvl>95 bit 0
+        lsh type switch active lvl>90 bit 1
+        lsl type switch active lvl>20 bit 2
+        tsh type switch active tmp>70 bit 3
+
+# tank 2 --------------------------------------------------------------------
+unity tk2 enabled true sequence 1 label tank_2
+    procvar
+        lvl type level_var pv 0 wordr_pv 2 sp 100 wordw_sp 10 limits 0,100 sys generic() noise 0.002 loss 0
+        tmp type temperature_var pv 0 wordr_pv 3  limits 0,100 inertia 5 sys generic() noise 0.001 loss 0.02
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+        flwin1 type flow_calc pv 0 limits 0,15 sys flow_meter() noise 0.0001 loss 0.0 if fc02
+        flwout2 type flow_calc pv 0 wordr_pv 4 limits 0,15 sys flow_meter() noise 0.0001 loss 0.0 if pip23.fv23
+    actuator
+        fc02 type controller active false bit 3 flow 0.3 ctrl PID() wordw_mv 1 ctrl_pv tk2.lvl from_pv tk0.lvl to_pv sis.x02 inlet true label ctrl_valve
+        mix2 type mixer active false bit 4 flow 3.0 to_pv tk2.tmp inlet false label mixer2
+        ft1 type transmitter active true from_pv tk2.lvl to_pv flwin1 label flow_transmitter_in1
+    sensor
+        lshh type switch active lvl>95 bit 4
+        lsh type switch active lvl>90 bit 5
+        tsh type switch active tmp>70 bit 6
+
+# pip_tk2_tk3 ---------------------------------------------------------------
+unity pip23 enabled true sequence 2 label piping_between_tk2_tk3
+    procvar
+        x23 type aux_var pv 0 limits 0,1 sys generic() noise 0.0 loss 0.0
+        ph type ph_var pv 0  limits 0,14 sys generic() noise 0.001 loss 0.0
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 limits 0,100 sys generic() noise 0.0 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    actuator
+        fv23 type relay active false bit 5 flow 0.2 from_pv tk2.lvl to_pv sis.x23 inlet true label onoff_valve
+
+# ph correction -------------------------------------------------------------
+unity phc enabled true sequence 3 label ph_correction
+    actuator
+        fc3_1 type controller active false bit 24 flow 0.03 ctrl PID() ctrl_pv tk3.ph mv 100 wordw_mv 4 from_pv tk3.ph to_pv tk3.ph inlet true label ph_add
+        fc3_2 type controller active false bit 25 flow 0.03 ctrl PID() ctrl_pv tk3.ph mv 100 wordw_mv 5 from_pv tk3.ph to_pv tk3.ph inlet false label ph_sub
+
+# tank 3 --------------------------------------------------------------------
+unity tk3 enabled true sequence 4 label tank_3
+    procvar
+        lvl type level_var pv 0 wordr_pv 5 limits 0,100 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 wordr_pv 6 limits 0,100 sys generic() noise 0.001 loss 0.1
+        ph type ph_var pv 0 wordr_pv 10 limits 0,14 sys generic() noise 0.001 loss 0.0
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    actuator
+        mix3 type mixer active false bit 9 flow 3.0 to_pv tk3.ph inlet false label mixer3
+        fc63 type controller active false bit 11 flow 0.3 ctrl PID() wordw_mv 3 ctrl_par 0.5,0.00,0 ctrl_pv lvl from_pv ftr.lvl to_pv alt.x63 inlet true label ctrl_valve
+    sensor
+        lsh type switch active lvl>80 bit 7 label level_switch
+        lsl type switch active lvl>10 bit 8 label level_switch
+        tsh type switch active tmp>60 bit 9 label temperature_switch
+        tsl type switch active tmp<50 bit 10 label temperature_switch
+
+# flocculation -------------------------------------------------------------
+unity flc enabled true sequence 3 label flocculation
+        lvl type aux_var pv 0 limits 0,10 sys generic() noise 0.001 loss 0.0 label flocculant
+    actuator
+        fc4_2 type controller active false bit 14 flow 0.03 ctrl PID() ctrl_pv lvl mv 100 wordw_mv 6 from_pv lvl to_pv lvl inlet false label flocculation
+
+# tank 4 flocculation ---------------------------------------------------------------------
+unity tk4 enabled true sequence 1 label tank_4
+    procvar
+        lvl type level_var pv 0 wordr_pv 7 sp 100  limits 0,100 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 wordr_pv 8 limits 0,100 sys generic() noise 0.001 loss 0.1
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    sensor
+        lsh type switch active lvl>50 bit 11
+        lsl type switch active lvl>10 bit 12
+        tsh type switch active tmp>60 bit 13
+        tsl type switch active tmp<50 bit 14
+    actuator
+        mix4 type mixer active false bit 7 flow 3.0 to_pv tk3.ph inlet false label mixer3
+        fc34 type controller active false bit 6 flow 0.3 ctrl PID() wordw_mv 7 ctrl_pv tk4.lvl from_pv tk3.lvl to_pv tk4.lvl inlet true label ctrl_valv
+
+# tank 5 decantation ---------------------------------------------------------------
+unity dct enabled true bit 29 sequence 3 label tank_5_decantation
+    procvar
+        lvl type level_var pv 0 wordr_pv 9 limits 0,10 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    sensor
+        lsh type switch active lvl>9 bit 15 label bucket_full
+    actuator
+        fc45 type controller active false bit 8 flow 0.2 ctrl PID() wordw_mv 0 mv 5 from_pv tk4.lvl to_pv lvl inlet true label ctrl_valve
+        aux type controller active true flow 0.01 ctrl PID() ctrl_par 5.0,1.0,0.0 ctrl_pv trb from_pv flc.lvl to_pv trb inlet false label decantation
+
+# tank 6 filtering --------------------------------------------------------------------
+unity ftr enabled true sequence 1 label tank_6_filtering
+    procvar
+        lvl type level_var pv 0 wordr_pv 11 sp 100  limits 0,100 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    actuator
+        fc56 type controller active false bit 10 flow 0.2 ctrl PID() wordw_mv 2 mv 5 from_pv dct.lvl to_pv lvl inlet true label ctrl_valve
+#        fv5 type relay active false flow 0.1 from_pv dct.lvl to_pv ftr.lvl inlet true label open_valve
+#        fv6 type relay active false flow 0.05 from_pv ftr.lvl to_pv qlt.lvl inlet true label open_valve
+
+# filler ---------------------------------------------------------------------
+unity filler enabled true sequence 2 label filler
+    procvar
+        lvl type level_var pv 0 limits 0,50 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.04
+        o2 type oxigen_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.0
+        ph type ph_var pv 0 limits 0,14 sys generic() noise 0.001 loss 0.0
+        trb type turbidity_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+    actuator
+        fv7 type relay active false bit 15 flow 0.1 from_pv ftr.lvl to_pv qlt.lvl inlet true label onoff_valve
+
+# tank 7 quality -------------------------------------------------------------------
+unity qlt enabled true sequence 1 label tank_7_quality
+    procvar
+        lvl type level_var pv 0 sp 10  limits 0,10 sys generic() noise 0.001 loss 0.0
+        tmp type temperature_var pv 0 limits 0,100 sys generic() noise 0.001 loss 0.1
+        ph type ph_var pv 0 wordr_pv 13 limits 0,14 sys generic() noise 0.001 loss 0.1
+        o2 type oxigen_var pv 0 wordr_pv 14 limits 0,100 sys generic() noise 0.001 loss 0.1
+        trb type turbidity_var pv 0 wordr_pv 12 limits 0,100 sys generic() noise 0.001 loss 0.1
+    sensor
+        lsl type switch active lvl>8 bit 25
