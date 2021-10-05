@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Original version of this code by Martin Lundberg: 
+https://github.com/m-lundberg/simple-pid
+
 PID CONTROLLER
 
 Created on Wed Mar 10 15:27:30 2021
-
 @author: glbramalho@gmail.com - Geraldo Ramalho
 
 This is the "simple-pid" adapted to make set_error() work fine
 matching the data interface of PLANTsim
 
-Adapted from: https://github.com/m-lundberg/simple-pid
 """
 
 ################################### PID
