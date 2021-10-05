@@ -10,7 +10,7 @@ automation concepts and techniques for engineering students.
 
 Keywords: digital twin, industrial automation, process simulation
 
-Arquivos:
+File-type:
 
 .INI      PLANTsim configuration file. 
           [required]
@@ -36,7 +36,7 @@ estudantes de engenharia.
 
 Palavras-chave: gêmeo digital, automação industrial, simulação de processo
 
-Arquivos:
+Tipos de arquivo:
 
 .INI      Arquivo de configuração do PLANTsim. 
           [necessário]
