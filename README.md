@@ -26,6 +26,8 @@ File-type:
           model in .PLANT. 
           [optional] [PLANTsim events language]
 
+Portuguese version ------------------------------------------------------------------------------
+
 O PLANTsim foi desenvolvido para simular o comportamento de um processo industrial.
 Ele foi projetado para criar um gêmeo digital de uma planta de processo industrial didático usada
 para ensinar conceitos de automação e redes industriais. PLANTsim pode ser usado para
