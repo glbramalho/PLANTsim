@@ -1,5 +1,5 @@
 # PLANTsim
-PLANTsim: a digital twin framework for industrial plants modeling and simulation
+PLANTsim: a digital twin framework in Python for industrial plants modeling and simulation
 
 PLANTsim was developed to emulate the behaviour of an industrial process. It was
 designed to create a digital twin of a didactic industrial process plant used to teach automation and
@@ -25,6 +25,12 @@ File-type:
 .SIM      File containing a pre-defined sequence of events that enables the states of the system 
           model in .PLANT. 
           [optional] [PLANTsim events language]
+
+Features:
+
+- MODBUS TCP comunication with PLCs (industrial controllers) and SCADA softwares (master or slave modes)
+- Plant design and modeling using a high level text language (PLANTsim language)
+- As an open framework it allows to create new devices and objects to expand and improve PLANTsim
 
 Portuguese version ------------------------------------------------------------------------------
 
