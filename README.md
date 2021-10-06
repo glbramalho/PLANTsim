@@ -1,4 +1,6 @@
 # PLANTsim
+DOI: 10.37702/COBENGE.2021.3508
+
 PLANTsim: a digital twin framework in Python for industrial plants modeling and simulation
 
 PLANTsim was developed to emulate the behaviour of an industrial process. It was
