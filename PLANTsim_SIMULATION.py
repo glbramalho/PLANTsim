@@ -85,7 +85,7 @@ class Events:
                 self.is_run = False
             nm = var.split('.')
             if instruction[0] in 'if':
-                condition = plant.eval_exp(exp)
+                condition = plant.is_active(exp)
                 if condition: 
                     plant.w(var, val)
                     stat.append(var+'='+str(val))
