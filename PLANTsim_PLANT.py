@@ -1220,7 +1220,7 @@ class Plant:
                                     pv_level = self.r(to_unity,lvl,'pv')
                                 # print('+++',to_unity, lvl, pv_level)
                             if pv_level is not None:
-                                full_level = diff(self.r(to_unity,'lvl','limits'))
+                                full_level = diff(self.r(to_unity,lvl,'limits'))
                                 mix_proportion *= 1-pv_level/full_level
 
                         # if not exists mix_pv in from_pv/to_pv!!!!!!!
