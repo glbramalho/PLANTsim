@@ -901,18 +901,21 @@ class Plant:
         x = list(tmp.keys())[i]
         print(bg.WHITE+fg.BLACK,' '*16,end='')
         while x:
-            # if self.r(x+'.lvl.pv') > 0:
+            unity.append(x)
+            x = tmp.get(x)
+            if (x in unity):
+                break
+        for i,x in enumerate(unity):
             if self.r(x+'.lvl.pv'):
                 print(fg.BLACK+st.BRIGHT+x,sep=' ',end='')
             else:
                 print(fg.BLACK+st.DIM+x,sep=' ',end='')
-            if act.get(x):
-                print(fg.BLACK+st.DIM,' -> ',sep='',end='')
-            else:
-                print(fg.BLACK+st.DIM,' -> ',sep='',end='')
-            unity.append(x)
-            x = tmp.get(x)
-        print(fg.RED+st.BRIGHT,'discharge',st.RESET_ALL)
+            if i<len(unity)-1:
+                if act.get(x):
+                    print(fg.BLACK+st.DIM,'  | ',sep='',end='')
+                else:
+                    print(fg.BLACK+st.DIM,'  | ',sep='',end='')
+        print('   ', st.RESET_ALL) 
         #
         if not self.print_old_state: self.print_old_state = {}
         for ty in self.KEYS['var']:
