@@ -28,7 +28,7 @@ File-type:
           model in .PLANT. 
           [optional] [PLANTsim events language]
 
-=> You can use the ATOM editor and atom_plantsim.zip syntax highlight package to easily edit .PLANT, .SIM and .PRG files.
+=> You can use the ATOM editor and the provided atom_plantsim.zip syntax highlight package to easily edit .PLANT, .SIM and .PRG files.
 
 Features:
 
