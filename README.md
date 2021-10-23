@@ -28,7 +28,7 @@ File-type:
           model in .PLANT. 
           [optional] [PLANTsim events language]
 
---- You can use the ATOM editor and atom_plantsim.zip package to easily edit .PLANT, .SIM and .PRG files.
+=> You can use the ATOM editor and atom_plantsim.zip syntax highlight package to easily edit .PLANT, .SIM and .PRG files.
 
 Features:
 
@@ -62,3 +62,5 @@ Tipos de arquivo:
 
 .SIM      Arquivo contendo uma sequência de eventos que definem os estados do sistema modelado em .PLANT. 
           [opcional] [Linguagem de eventos do PLANTsim]
+
+=> Você pode usar o editor ATOM e o pacote de sintaxe atom_plantsim.zip para facilitar a edição dos arquivos .PLANT, .SIM e .PRG.
