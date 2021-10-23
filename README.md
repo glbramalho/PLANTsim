@@ -28,6 +28,8 @@ File-type:
           model in .PLANT. 
           [optional] [PLANTsim events language]
 
+* Use the ATOM editor and atom_plantsim.zip package to easily edit .PLANT, .SIM and .PRG files.
+
 Features:
 
 - MODBUS TCP comunication with PLCs (industrial controllers) and SCADA softwares (master or slave modes)
